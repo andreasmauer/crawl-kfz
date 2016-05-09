@@ -1,11 +1,14 @@
 import urllib.request
 import csv
 
+
 model = {
 	# 'url': {'anchor': anchor,
 	# 		  'crawled': true/false,
 	# },
 }
+
+crawlingList = []
 
 
 
@@ -46,30 +49,48 @@ def getHTML(url):
 
 
 def passLinkstoModel(html):
-	
-	html = html.split('<div class="borderBox width100">')
-	for piece in html[1:]:
-		if 'style="width: 100%; margin-top: 0px; display: inline-block;">' in piece:
-			
-			# extract links
 
-			# to extract the first link it has to be different
-			url = piece.split('<a href="')
-			if (len(url) > 1):
-				url = url[-1].split('"')[0]
-			else:
-				url = piece.split('<a href="')[1].split('"')[0]
-			anchor = piece.split('style="width: 100%; margin-top: 0px; display: inline-block;">')[1].split('</div>')[0].strip()
+
+	# for special pages with boxes instead of list of links
+	if '<div class="productGroupBanner marginBottomMedium">' in html:
+
+		html = html.split('class="standard "')
+		for piece in html[1:]:
+			url = piece.split('href="')[1].split('"')[0]
+			anchor = piece.split('style="width: 99%; margin-top: -10px;">')[1].split('</div></a>')[0].strip()
 			model[url] = {'anchor': anchor, 'crawled': 'False'}
-			# print(url)
-			modelUpdated = True
+
+
+	# for the normal pages
+	else:	
+	
+		html = html.split('<div class="borderBox width100">')
+		for piece in html[1:]:
+			if 'style="width: 100%; margin-top: 0px; display: inline-block;">' in piece:
+				
+				# extract links
+
+				# to extract the first link it has to be different
+				url = piece.split('<a href="')
+				if (len(url) > 1):
+					url = url[-1].split('"')[0]
+				else:
+					url = piece.split('<a href="')[1].split('"')[0]
+				anchor = piece.split('style="width: 100%; margin-top: 0px; display: inline-block;">')[1].split('</div>')[0].strip()
+				model[url] = {'anchor': anchor, 'crawled': 'False'}
+				# print(url)
+
+
+def test(uri):
+	html = getHTML(uri)
+	passLinkstoModel(html)
+	print(model)
 
 
 
+def listCrawler(urls):
 
-def tupleCrawler(urlsTuple):
-
-	for url in urlsTuple:
+	for url in urls:
 
 		print(url)
 		html = getHTML(url)
@@ -77,43 +98,41 @@ def tupleCrawler(urlsTuple):
 		model[url]['crawled'] = 'True'
 
 		
-			
-# as Input I need the first level from leftNav
-def controller():
-
-
-	modelUpdated = False
-	urlsList = []
-
-
-	# if there is any url not crawled past it to the tuple
-
-	for url in model:
-
-		if model[url]['crawled'] == 'False':
-
-			urlsList.append(url)
-	# print (model)
-	tupleCrawler(urlsList)
+		
 
 
 def superController(input, output):
 	
-	modelUpdated = True
-	fromCSVtoModel(input)
 
-	while modelUpdated == True:		
-		print('superController shoot')
-		controller()
+	# another option is to do a check up of all the keys in the model to see if any of them is
+	# still to be crawled
+
+	fromCSVtoModel(input)
+	updateCrawlingList()
+
+	while crawlingList != []:
+		listCrawler(crawlingList)
 		saveCSV(output)
+		updateCrawlingList()
 
 
 	print('superController finished')
 
 
 
+def updateCrawlingList():
 
-superController('leftNav.csv', 'result.csv')
+	# reset 
+	crawlingList = []
+
+	for url in model:
+		if model[url]['crawled'] == 'False':
+			crawlingList.append(url)
+
+
+# superController('leftNav.csv', 'result.csv')
+test('/reifen-felgen-komplettraeder')
+
 
 
 # html = getHTML('/ersatzteile-verschleissteile/bremsanlage')
