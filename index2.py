@@ -106,6 +106,8 @@ class Crawler:
 				self.passLinkstoModel(html)
 				# self.waitingList.remove(uri)
 
+		print('done')
+
 
 	
 	def updateWaitingList(self):
