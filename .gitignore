@@ -1,6 +1,10 @@
 
 *.csv
 
+
 *.zip
 
-Archiv.zip
+*.pyc
+*.zip
+_pycache_
+
