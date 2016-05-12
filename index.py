@@ -87,6 +87,18 @@ def test(uri):
 	print(model)
 
 
+def test2(uri):
+
+	print('')
+	print('')
+	print('')
+	print('in this URL: ' + uri)
+	html = getHTML(uri)
+	passLinkstoModel(html)
+
+	for key in model:
+		print(model[key]['anchor'] + '     ->' + key)
+
 
 def listCrawler(urls):
 
@@ -131,7 +143,7 @@ def updateCrawlingList():
 
 
 # superController('leftNav.csv', 'result.csv')
-test('/reifen-felgen-komplettraeder')
+test2('/dachboxen-und-traegersysteme')
 
 
 
