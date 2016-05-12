@@ -121,6 +121,7 @@ def superController(input, output):
 
 	fromCSVtoModel(input)
 	updateCrawlingList()
+	print(crawlingList)
 
 	while crawlingList != []:
 		listCrawler(crawlingList)
@@ -134,16 +135,17 @@ def superController(input, output):
 
 def updateCrawlingList():
 
-	# reset 
+	# reset --> error, this will be local internal to the function and not the global one
 	crawlingList = []
 
 	for url in model:
 		if model[url]['crawled'] == 'False':
 			crawlingList.append(url)
+	print(crawlingList)
 
 
-# superController('leftNav.csv', 'result.csv')
-test2('/dachboxen-und-traegersysteme')
+superController('leftNav.csv', 'result.csv')
+# test2('/dachboxen-und-traegersysteme')
 
 
 
